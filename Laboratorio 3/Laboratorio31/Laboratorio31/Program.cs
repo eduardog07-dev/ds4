@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Laboratorio32
+namespace Laboratorio31
 {
     class CalculosMatematicos
     {   
