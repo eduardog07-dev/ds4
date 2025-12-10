@@ -1,0 +1,257 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nuevo Producto</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --success-color: #28a745;
+            --secondary-color: #6c757d;
+            --light-bg: #f4f4f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        h1 {
+            margin: 0;
+            color: #333;
+            font-size: 1.8rem;
+        }
+
+        /* Panel de Importación Masiva (Excel) */
+        .excel-panel {
+            background-color: #e8f5e9;
+            border: 1px dashed var(--success-color);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .excel-text {
+            color: #155724;
+            font-size: 0.9rem;
+        }
+
+        /* Formulario */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+            input:focus, select:focus {
+                border-color: var(--primary-color);
+                outline: none;
+            }
+
+        /* --- BOTONES (Aplicación de Efecto de Hover) --- */
+        .actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            /* Agregamos la transición y el hover aquí */
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+            /* Efecto Visual: Levanta y oscurece ligeramente */
+            .btn:hover {
+                transform: translateY(-4px); /* Levanta el botón 2px */
+                opacity: 0.95;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+
+        .btn-save {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-cancel {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-excel {
+            background-color: var(--success-color);
+            color: white;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Media Query para Móviles */
+        @@media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: span 1;
+            }
+
+            .header-flex {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .excel-panel {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="header-flex">
+            <h1>Registrar Nuevo Producto</h1>
+            <a href="/Inventario/Index" class="btn btn-cancel">← Volver al Listado</a>
+        </div>
+
+        <div class="excel-panel">
+            <div class="excel-text">
+                <strong>¿Tienes muchos productos?</strong> Ahorra tiempo importando un archivo.
+            </div>
+            <button class="btn btn-excel" onclick="alert('Aquí se abrirá el explorador de archivos para subir el Excel')">
+                📂 Importar desde Excel
+            </button>
+        </div>
+
+        <form action="/Inventario/Guardar" method="post">
+            <div class="form-grid">
+
+                <div class="form-group full-width">
+                    <label>Nombre del Producto:</label>
+                    <input type="text" placeholder="Ej: Monitor LED 24 Pulgadas" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Código / Referencia:</label>
+                    <input type="text" placeholder="Ej: HW-005" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Categoría:</label>
+                    <select>
+                        <option value="">-- Seleccionar --</option>
+                        <option value="Hardware">Hardware</option>
+                        <option value="Perifericos">Periféricos</option>
+                        <option value="Redes">Redes</option>
+                        <option value="Componentes">Componentes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Precio de Venta ($):</label>
+                    <input type="number" step="0.01" placeholder="0.00" />
+                </div>
+
+                <div class="form-group">
+                    <label>Stock Inicial (Cantidad):</label>
+                    <input type="number" placeholder="0" />
+                </div>
+
+                <div class="form-group">
+                    <label>Stock Mínimo (Alerta):</label>
+                    <input type="number" placeholder="5" title="Te avisaremos cuando baje de esta cantidad" />
+                </div>
+
+            </div>
+
+            <div class="actions">
+                <a href="/Inventario/Index" class="btn btn-cancel">Cancelar</a>
+                <button type="submit" class="btn btn-save">💾 Guardar Producto</button>
+            </div>
+        </form>
+
+    </div>
+
+</body>
+</html>

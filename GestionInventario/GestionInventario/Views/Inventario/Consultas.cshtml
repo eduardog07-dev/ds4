@@ -1,0 +1,254 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Consultas y Reportes</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --success-color: #28a745;
+            --info-color: #17a2b8;
+            --secondary-color: #6c757d;
+            --dark-bg: #343a40;
+            --light-bg: #f4f4f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .search-panel {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-end; /* Alinear botones abajo */
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #555;
+        }
+
+        input[type="text"], select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            min-width: 200px;
+        }
+
+        /* --- ESTILOS DE BOTONES CON EFECTO HOVER --- */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            font-size: 14px;
+            /* Transición suave */
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+        }
+
+            /* El efecto de "levantar" el botón */
+            .btn:hover {
+                transform: translateY(-4px);
+                opacity: 0.95;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            }
+
+        .btn-back {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-search {
+            background-color: var(--primary-color);
+        }
+
+        .btn-excel-in {
+            background-color: var(--success-color);
+        }
+
+        .btn-excel-out {
+            background-color: var(--info-color);
+        }
+
+        /* Área de Resultados */
+        .results-area {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--dark-bg);
+            color: white;
+        }
+
+        /* Responsive simple para móviles */
+        @@media (max-width: 768px) {
+            .search-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .form-group input, .form-group select {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .btn {
+                width: 100%;
+                margin-top: 5px;
+            }
+            /* Ocultar tabla en móvil y mostrar mensaje simple por ahora */
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+                thead tr {
+                    position: absolute;
+                    top: -9999px;
+                    left: -9999px;
+                }
+
+            tr {
+                border: 1px solid #ccc;
+                margin-bottom: 10px;
+                padding: 10px;
+                border-radius: 5px;
+            }
+
+            td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+            }
+
+                td:before {
+                    position: absolute;
+                    left: 10px;
+                    content: attr(data-label);
+                    font-weight: bold;
+                }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="header-flex">
+            <h1>Consultas y Reportería</h1>
+            <a href="/Inventario/Index" class="btn btn-back">← Volver al Inventario</a>
+        </div>
+
+        <div class="search-panel">
+            <div class="form-group">
+                <label>Buscar por Texto:</label>
+                <input type="text" placeholder="Nombre, código o marca..." />
+            </div>
+
+            <div class="form-group">
+                <label>Categoría:</label>
+                <select>
+                    <option value="">-- Todas --</option>
+                    <option value="Hardware">Hardware</option>
+                    <option value="Perifericos">Periféricos</option>
+                    <option value="Redes">Redes</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>&nbsp;</label> <button class="btn btn-search">🔍 Buscar</button>
+            </div>
+
+            <div style="flex-grow: 1;"></div>
+
+            <div class="form-group">
+                <label>Acciones Masivas:</label>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <button class="btn btn-excel-in">📂 Importar Excel</button>
+                    <button class="btn btn-excel-out">📊 Exportar Reporte</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-area">
+            <h3>Resultados de la búsqueda</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Stock</th>
+                        <th>Precio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding: 20px; color: #777;">
+                            Realice una búsqueda para ver los datos...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</body>
+</html>
