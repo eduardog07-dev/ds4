@@ -23,6 +23,42 @@
             background-color: var(--light-bg);
             margin: 0;
             padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* --- ANIMACIÓN DE ENTRADA (Zoom Explosión) --- */
+        @@keyframes zoomExplosion {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            60% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* --- ANIMACIÓN DE SALIDA (TV Retro) --- */
+        @@keyframes tvOff {
+            0% {
+                transform: scale(1, 1);
+                opacity: 1;
+            }
+
+            40% {
+                transform: scale(1, 0.05);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0, 0.05);
+                opacity: 0;
+            }
         }
 
         .container {
@@ -32,6 +68,13 @@
             padding: 20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             border-radius: 8px;
+            /* Aplicamos ENTRADA */
+            animation: zoomExplosion 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .animacion-salida {
+            /* Aplicamos SALIDA al volver */
+            animation: tvOff 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
         }
 
         .header-flex {
@@ -51,7 +94,7 @@
             border-radius: 8px;
             display: flex;
             gap: 15px;
-            align-items: flex-end; /* Alinear botones abajo */
+            align-items: flex-end;
             flex-wrap: wrap;
             margin-bottom: 30px;
         }
@@ -75,7 +118,6 @@
             min-width: 200px;
         }
 
-        /* --- ESTILOS DE BOTONES CON EFECTO HOVER --- */
         .btn {
             padding: 10px 20px;
             border: none;
@@ -87,13 +129,11 @@
             display: inline-block;
             text-align: center;
             font-size: 14px;
-            /* Transición suave */
             transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
         }
 
-            /* El efecto de "levantar" el botón */
             .btn:hover {
-                transform: translateY(-4px);
+                transform: translateY(-2px);
                 opacity: 0.95;
                 box-shadow: 0 4px 8px rgba(0,0,0,0.15);
             }
@@ -105,16 +145,11 @@
         .btn-search {
             background-color: var(--primary-color);
         }
-
-        .btn-excel-in {
-            background-color: var(--success-color);
-        }
-
+        /* .btn-excel-in ELIMINADO */
         .btn-excel-out {
             background-color: var(--info-color);
         }
 
-        /* Área de Resultados */
         .results-area {
             margin-top: 20px;
         }
@@ -136,7 +171,6 @@
             color: white;
         }
 
-        /* Responsive simple para móviles */
         @@media (max-width: 768px) {
             .search-panel {
                 flex-direction: column;
@@ -152,7 +186,7 @@
                 width: 100%;
                 margin-top: 5px;
             }
-            /* Ocultar tabla en móvil y mostrar mensaje simple por ahora */
+
             table, thead, tbody, th, td, tr {
                 display: block;
             }
@@ -188,10 +222,9 @@
 <body>
 
     <div class="container">
-
         <div class="header-flex">
             <h1>Consultas y Reportería</h1>
-            <a href="/Inventario/Index" class="btn btn-back">← Volver al Inventario</a>
+            <button class="btn btn-back" onclick="volverAlIndex(event)">← Volver al Inventario</button>
         </div>
 
         <div class="search-panel">
@@ -211,15 +244,15 @@
             </div>
 
             <div class="form-group">
-                <label>&nbsp;</label> <button class="btn btn-search">🔍 Buscar</button>
+                <label>&nbsp;</label>
+                <button class="btn btn-search">🔍 Buscar</button>
             </div>
 
             <div style="flex-grow: 1;"></div>
 
             <div class="form-group">
-                <label>Acciones Masivas:</label>
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <button class="btn btn-excel-in">📂 Importar Excel</button>
+                <label>Reportes:</label>
+                <div style="display:flex;">
                     <button class="btn btn-excel-out">📊 Exportar Reporte</button>
                 </div>
             </div>
@@ -227,7 +260,6 @@
 
         <div class="results-area">
             <h3>Resultados de la búsqueda</h3>
-
             <table>
                 <thead>
                     <tr>
@@ -247,8 +279,20 @@
                 </tbody>
             </table>
         </div>
-
     </div>
 
+    <script>
+        function volverAlIndex(e) {
+            if (e) e.preventDefault();
+
+            var contenedor = document.querySelector('.container');
+            // Activar animación de salida (TV Retro)
+            contenedor.classList.add('animacion-salida');
+
+            setTimeout(function () {
+                location.href = '/Inventario/Index';
+            }, 400);
+        }
+    </script>
 </body>
 </html>
