@@ -7,25 +7,24 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nuevo Equipo Tecnológico</title>
+    <title>Nuevo Activo Tecnológico</title>
     <style>
         :root {
-            --primary-color: #007bff;
-            --success-color: #28a745;
-            --secondary-color: #6c757d;
-            --light-bg: #f4f4f9;
+            --color_primario: #007bff;
+            --color_exito: #28a745;
+            --color_secundario: #6c757d;
+            --fondo_claro: #f4f4f9;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light-bg);
+            background-color: var(--fondo_claro);
             margin: 0;
             padding: 20px;
             overflow-x: hidden;
         }
 
-        /* --- ANIMACIÓN DE ENTRADA (Zoom) --- */
-        @@keyframes zoomExplosion {
+        @@keyframes zoom_explosion {
             0% {
                 opacity: 0;
                 transform: scale(0.5);
@@ -41,8 +40,7 @@
             }
         }
 
-        /* --- ANIMACIÓN DE SALIDA (TV Retro) --- */
-        @@keyframes tvOff {
+        @@keyframes tv_apagada {
             0% {
                 transform: scale(1, 1);
                 opacity: 1;
@@ -54,26 +52,26 @@
             }
 
             100% {
-                transform: scale(0, 0.05);
+                transform: scale(0, 0.04);
                 opacity: 0;
             }
         }
 
-        .container {
+        .contenedor_principal {
             max-width: 1100px;
             margin: 0 auto;
             background-color: white;
             padding: 30px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             border-radius: 8px;
-            animation: zoomExplosion 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            animation: zoom_explosion 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
 
-        .animacion-salida {
-            animation: tvOff 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        .animacion_salida {
+            animation: tv_apagada 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
         }
 
-        .header-flex {
+        .encabezado_flexible {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -88,9 +86,9 @@
             font-size: 1.6rem;
         }
 
-        .excel-panel {
+        .panel_excel {
             background-color: #e8f5e9;
-            border: 1px dashed var(--success-color);
+            border: 1px dashed var(--color_exito);
             padding: 15px;
             border-radius: 6px;
             margin-bottom: 30px;
@@ -99,13 +97,13 @@
             align-items: center;
         }
 
-        .form-grid {
+        .cuadricula_formulario {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
         }
 
-        .form-group {
+        .grupo_formulario {
             display: flex;
             flex-direction: column;
         }
@@ -130,14 +128,15 @@
                 background-color: #f0f0f0;
                 cursor: not-allowed;
                 color: #666;
+                font-weight: bold;
             }
 
-        .highlight {
-            border: 1px solid var(--primary-color);
+        .campo_resaltado {
+            border: 1px solid var(--color_primario);
             background-color: #f0f7ff;
         }
 
-        .actions {
+        .seccion_acciones {
             margin-top: 40px;
             display: flex;
             justify-content: flex-end;
@@ -146,7 +145,7 @@
             padding-top: 25px;
         }
 
-        .btn {
+        .boton {
             padding: 12px 30px;
             border: none;
             border-radius: 5px;
@@ -156,38 +155,38 @@
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
-            .btn:hover {
-                transform: translateY(-2px);
+            .boton:hover {
+                transform: translateY(-4px);
                 box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             }
 
-        .btn-save {
-            background-color: var(--primary-color);
+        .boton_guardar {
+            background-color: var(--color_primario);
             color: white;
         }
 
-        .btn-cancel {
-            background-color: var(--secondary-color);
+        .boton_cancelar {
+            background-color: var(--color_secundario);
             color: white;
         }
 
-        .btn-excel {
-            background-color: var(--success-color);
+        .boton_excel {
+            background-color: var(--color_exito);
             color: white;
         }
 
         @@media (max-width: 900px) {
-            .form-grid {
+            .cuadricula_formulario {
                 grid-template-columns: 1fr 1fr;
             }
         }
 
         @@media (max-width: 600px) {
-            .form-grid {
+            .cuadricula_formulario {
                 grid-template-columns: 1fr;
             }
 
-            .header-flex {
+            .encabezado_flexible {
                 flex-direction: column;
                 gap: 15px;
                 text-align: center;
@@ -197,60 +196,143 @@
 </head>
 <body>
 
-    <div class="container">
-        <div class="header-flex">
-            <h1>Registro de Activo Tecnológico</h1>
-            <button class="btn btn-cancel" onclick="volverAlIndex(event)">Volver</button>
+    <div class="contenedor_principal">
+        <div class="encabezado_flexible">
+            <h1>Nuevo Activo Tecnológico</h1>
+            <button class="boton boton_cancelar" onclick="volver_al_inicio(event)">Volver</button>
         </div>
 
-        <div class="excel-panel">
+        <div class="panel_excel">
             <span>¿Carga masiva de equipos? Utilice la plantilla de Excel.</span>
-            <button class="btn btn-excel">Importar Excel</button>
+            <button class="boton boton_excel">Importar Excel</button>
         </div>
 
         <form action="/Inventario/Guardar" method="post">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Número de Serie</label>
-                    <input type="text" id="Serie" name="Serie" class="highlight" placeholder="Ingrese Serie" required oninput="syncIdentificador()" />
-                </div>
-                <div class="form-group"><label>Identificador</label><input type="text" id="Identificador" readonly /></div>
-                <div class="form-group"><label>Fecha</label><input type="text" id="FechaCreacion" readonly /></div>
+            <div class="cuadricula_formulario">
 
-                <div class="form-group"><label>Fabricante</label><input type="text" name="Fabricante" /></div>
-                <div class="form-group"><label>Modelo</label><input type="text" name="Modelo" /></div>
-                <div class="form-group"><label>Hostname</label><input type="text" name="Hostname" /></div>
-                <div class="form-group"><label>Sucursal</label><input type="text" name="Sucursal" required /></div>
-                <div class="form-group"><label>Estado</label><select name="Estado"><option>Operativo</option><option>Descartado</option></select></div>
+                <div class="grupo_formulario">
+                    <label>Número de Serie</label>
+                    <input type="text" id="Serie" name="Serie" class="campo_resaltado" placeholder="Ej: CND823..." required oninput="sincronizar_identificador()" />
+                </div>
+                <div class="grupo_formulario">
+                    <label>Identificador</label>
+                    <input type="text" id="Identificador" name="Identificador" readonly title="Se llena igual que la serie" />
+                </div>
+                <div class="grupo_formulario">
+                    <label>Fec. Creación</label>
+                    <input type="text" id="FechaCreacion" name="FechaCreacion" readonly />
+                </div>
+
+                <div class="grupo_formulario">
+                    <label>Fabricante</label>
+                    <input type="text" name="Fabricante" placeholder="Ej: HP, Dell" />
+                </div>
+                <div class="grupo_formulario">
+                    <label>Modelo</label>
+                    <input type="text" name="Modelo" placeholder="Ej: Latitude 5420" />
+                </div>
+                <div class="grupo_formulario">
+                    <label>Tipo CI</label>
+                    <select name="TipoCI">
+                        <option value="Laptop">Laptop</option>
+                        <option value="Desktop">Desktop</option>
+                        <option value="Servidor">Servidor</option>
+                        <option value="Tablet">Tablet</option>
+                        <option value="Periferico">Periférico</option>
+                    </select>
+                </div>
+
+                <div class="grupo_formulario">
+                    <label>Hostname</label>
+                    <input type="text" name="Hostname" placeholder="Ej: PC-FINANZAS-01" />
+                </div>
+                <div class="grupo_formulario">
+                    <label>Dirección IP</label>
+                    <input type="text" name="IP" placeholder="192.168.x.x" />
+                </div>
+                <div class="grupo_formulario">
+                    <label>MAC Address</label>
+                    <input type="text" name="MAC" placeholder="AA:BB:CC:DD:EE:FF" />
+                </div>
+                <div class="grupo_formulario">
+                    <label>Sistema Operativo</label>
+                    <input type="text" name="SO" placeholder="Ej: Windows 10 Pro" />
+                </div>
+
+                <div class="grupo_formulario">
+                    <label>RAM (GB)</label>
+                    <input type="text" name="RAM" placeholder="Ej: 16GB" />
+                </div>
+                <div class="grupo_formulario">
+                    <label>Almacenamiento</label>
+                    <input type="text" name="Almacenamiento" placeholder="Ej: 512GB SSD" />
+                </div>
+
+                <div class="grupo_formulario">
+                    <label>Sucursal</label>
+                    <select name="Sucursal" class="campo_resaltado" required>
+                        <option value="">-- Seleccionar --</option>
+                        <option value="Oficinas Centrales">Oficinas Centrales</option>
+                        <option value="Ventas">Ventas</option>
+                    </select>
+                </div>
+
+                <div class="grupo_formulario">
+                    <label>Ubicación Detallada</label>
+                    <input type="text" name="Ubicacion" placeholder="Ej: Piso 2, Oficina 3" />
+                </div>
+
+                <div class="grupo_formulario">
+                    <label>Estado</label>
+                    <select name="Estado" class="campo_resaltado">
+                        <option value="Operativo">Operativo</option>
+                        <option value="Descartado">Descartado</option>
+                        <option value="Prestamo">Préstamo</option>
+                    </select>
+                </div>
+
+                <div class="grupo_formulario">
+                    <label>Número de Activo</label>
+                    <input type="text" name="NumeroActivo" placeholder="Etiqueta interna" />
+                </div>
+                <div class="grupo_formulario">
+                    <label>Título / Descripción</label>
+                    <input type="text" name="Titulo" />
+                </div>
+                <div class="grupo_formulario">
+                    <label>Creado Por</label>
+                    <input type="text" name="CreadoPor" placeholder="EJ: EDUARDO MARMOLEJO" />
+                </div>
+
             </div>
 
-            <div class="actions">
-                <button type="button" class="btn btn-cancel" onclick="volverAlIndex(event)">Cancelar</button>
-                <button type="submit" class="btn btn-save">Guardar Activo</button>
+            <div class="seccion_acciones">
+                <button type="button" class="boton boton_cancelar" onclick="volver_al_inicio(event)">Cancelar</button>
+                <button type="submit" class="boton boton_guardar">Guardar Activo</button>
             </div>
         </form>
     </div>
 
     <script>
-        function volverAlIndex(e) {
+        function volver_al_inicio(e) {
             if (e) e.preventDefault();
 
-            var contenedor = document.querySelector('.container');
-            contenedor.classList.add('animacion-salida');
+            var contenedor = document.querySelector('.contenedor_principal');
+            contenedor.classList.add('animacion_salida');
 
             setTimeout(function () {
                 location.href = '/Inventario/Index';
             }, 400);
         }
 
-        function syncIdentificador() {
+        function sincronizar_identificador() {
             const serie = document.getElementById('Serie').value;
             document.getElementById('Identificador').value = serie;
         }
 
         window.onload = function () {
             const ahora = new Date();
-            document.getElementById('FechaCreacion').value = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString();
+            document.getElementById('FechaCreacion').value = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         };
     </script>
 </body>
