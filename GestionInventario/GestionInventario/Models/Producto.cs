@@ -1,45 +1,37 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
-namespace GestiónInventario.Models
+namespace GestiónInventario.Models // <--- PON EL NOMBRE REAL DE TU PROYECTO AQUÍ
 {
     public class Producto
     {
-        public int Id
-        {
-            get; set;
-        }
+        // Identificación
+        public string Serie { get; set; }
+        public string Identificador { get; set; }
+        public DateTime FechaCreacion { get; set; }
 
-        [Required]
-        public string Codigo
-        {
-            get; set;
-        } // Código de barras o referencia
+        // Detalles
+        public string Fabricante { get; set; }
+        public string Modelo { get; set; }
+        public string TipoCI { get; set; } // Laptop, Desktop, etc.
 
-        [Required]
-        public string Nombre
-        {
-            get; set;
-        }
+        // Red
+        public string Hostname { get; set; }
+        public string IP { get; set; }
+        public string MAC { get; set; }
+        public string SO { get; set; }
 
-        public string Categoria
-        {
-            get; set;
-        } // "Hardware", "Periférico", etc.
+        // Hardware
+        public string RAM { get; set; } // Lo recibimos como string ("16GB") y luego lo limpiamos
+        public string Almacenamiento { get; set; }
 
-        public int StockActual
-        {
-            get; set;
-        }
+        // Ubicación y Estado
+        public string Sucursal { get; set; }
+        public string Ubicacion { get; set; }
+        public string Estado { get; set; }
 
-        public int StockMinimo
-        {
-            get; set;
-        } // Para alertas
-
-        public decimal Precio
-        {
-            get; set;
-        }
+        // Extra
+        public string NumeroActivo { get; set; }
+        public string Titulo { get; set; }
+        public string CreadoPor { get; set; }
     }
 }

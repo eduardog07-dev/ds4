@@ -26,6 +26,44 @@
             overflow-x: hidden;
         }
 
+        /* --- ESTILOS DE PANTALLA DE CARGA --- */
+        #overlay_carga {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            z-index: 9999;
+            flex-direction: column;
+        }
+
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid var(--color_primario);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: girar 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @@keyframes girar {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        /* ------------------------------------------- */
+
         @@keyframes zoom_explosion {
             0% {
                 opacity: 0;
@@ -49,12 +87,12 @@
             }
 
             40% {
-                transform: scale(1, 0.07);
+                transform: scale(1, 0.05);
                 opacity: 1;
             }
 
             100% {
-                transform: scale(0, 0.07);
+                transform: scale(0, 0.05);
                 opacity: 0;
             }
         }
@@ -70,7 +108,7 @@
         }
 
         .animacion_salida {
-            animation: tv_apagada 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation: tv_apagada 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
         }
 
         .encabezado_flexible {
@@ -129,7 +167,7 @@
         }
 
             .boton:hover {
-                transform: translateY(-4px);
+                transform: translateY(-2px);
                 opacity: 0.95;
                 box-shadow: 0 4px 8px rgba(0,0,0,0.15);
             }
@@ -180,9 +218,20 @@
             font-size: 0.8rem;
         }
 
+        /* Estilos de etiquetas */
         .etiqueta_operativo {
             background-color: #d4edda;
             color: #155724;
+        }
+
+        .etiqueta_baja {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .etiqueta_prestamo {
+            background-color: #fff3cd;
+            color: #856404;
         }
 
         @@media (max-width: 768px) {
@@ -235,6 +284,11 @@
 </head>
 <body>
 
+    <div id="overlay_carga">
+        <div class="spinner"></div>
+        <span id="texto_carga">Procesando...</span>
+    </div>
+
     <div class="contenedor_principal">
         <div class="encabezado_flexible">
             <h1>Consultas y Reportería</h1>
@@ -244,12 +298,12 @@
         <div class="panel_busqueda">
             <div class="grupo_formulario">
                 <label>Búsqueda General:</label>
-                <input type="text" placeholder="Serie, Hostname, IP o Usuario..." />
+                <input type="text" id="txtBuscar" placeholder="Serie, Hostname, IP o Usuario..." />
             </div>
 
             <div class="grupo_formulario">
                 <label>Tipo Equipo:</label>
-                <select>
+                <select id="selTipo">
                     <option value="">-- Todos --</option>
                     <option value="Laptop">Laptop</option>
                     <option value="Desktop">Desktop</option>
@@ -260,7 +314,7 @@
 
             <div class="grupo_formulario">
                 <label>Estado:</label>
-                <select>
+                <select id="selEstado">
                     <option value="">-- Todos --</option>
                     <option value="Operativo">Operativo</option>
                     <option value="Prestamo">Préstamo</option>
@@ -270,7 +324,7 @@
 
             <div class="grupo_formulario">
                 <label>&nbsp;</label>
-                <button class="boton boton_buscar">🔍 Buscar</button>
+                <button class="boton boton_buscar" onclick="buscar_productos()">🔍 Buscar</button>
             </div>
 
             <div style="flex-grow: 1;"></div>
@@ -278,7 +332,7 @@
             <div class="grupo_formulario">
                 <label>Reportes:</label>
                 <div style="display:flex;">
-                    <button class="boton boton_excel">📊 Exportar Reporte</button>
+                    <button class="boton boton_excel" onclick="exportar_excel()">📊 Exportar Reporte</button>
                 </div>
             </div>
         </div>
@@ -295,35 +349,102 @@
                         <th>Estado</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td data-label="Serie">CND8234X<br><span class="texto_tenue">ID: CND8234X</span></td>
-                        <td data-label="Equipo">
-                            <strong>HP EliteBook 840</strong><br>
-                            <span class="texto_tenue">Laptop - 16GB RAM</span>
-                        </td>
-                        <td data-label="Red">
-                            PC-VENTAS-01<br>
-                            <span class="texto_tenue">192.168.1.45</span>
-                        </td>
-                        <td data-label="Ubicación">Sucursal Centro<br><span class="texto_tenue">Piso 2</span></td>
-                        <td data-label="Estado"><span class="etiqueta etiqueta_operativo">Operativo</span></td>
-                    </tr>
+                <tbody id="tablaResultados">
+                    <tr><td colspan="5" style="text-align:center; padding: 20px; color: #777;">Utilice los filtros para buscar...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
     <script>
+        // Función para mostrar/ocultar carga
+        function mostrar_carga(mostrar, mensaje = "Procesando...") {
+            const overlay = document.getElementById('overlay_carga');
+            const texto = document.getElementById('texto_carga');
+            texto.innerText = mensaje;
+            overlay.style.display = mostrar ? 'flex' : 'none';
+        }
+
         function volver_al_inicio(e) {
             if (e) e.preventDefault();
-
             var contenedor = document.querySelector('.contenedor_principal');
             contenedor.classList.add('animacion_salida');
+            setTimeout(function () { location.href = '/Inventario/Index'; }, 400);
+        }
 
-            setTimeout(function () {
-                location.href = '/Inventario/Index';
-            }, 400);
+        // --- 1. FUNCIÓN BUSCAR ---
+        async function buscar_productos() {
+            const txt = document.getElementById('txtBuscar').value;
+            const tipo = document.getElementById('selTipo').value;
+            const estado = document.getElementById('selEstado').value;
+
+            mostrar_carga(true, "Buscando..."); // Activar Spinner
+
+            const url = `/api/productos/buscar?texto=${txt}&tipo=${tipo}&estado=${estado}`;
+
+            try {
+                const respuesta = await fetch(url);
+                mostrar_carga(false); // Desactivar Spinner
+
+                if (respuesta.ok) {
+                    const productos = await respuesta.json();
+                    const cuerpo = document.getElementById('tablaResultados');
+
+                    if (productos.length === 0) {
+                        cuerpo.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">No se encontraron resultados.</td></tr>';
+                        return;
+                    }
+
+                    let html = '';
+                    productos.forEach(p => {
+                        let claseEstado = 'etiqueta_operativo';
+                        if (p.Estado === 'Descartado') claseEstado = 'etiqueta_baja';
+                        // Normalizamos la lógica para detectar el préstamo con o sin tilde en la visualización
+                        if (p.Estado === 'Préstamo' || p.Estado === 'Prestamo') claseEstado = 'etiqueta_prestamo';
+
+                        // Validación de datos nulos
+                        const serie = p.Serie || "---";
+                        const id = p.Identificador || serie;
+                        const modelo = p.Modelo || "---";
+                        const tipoCI = p.TipoCI || "---";
+                        const host = p.Hostname || "---";
+                        const ip = p.IP || "---";
+                        const suc = p.Sucursal || "---";
+                        const est = p.Estado || "---";
+
+                        html += `
+                                <tr>
+                                    <td data-label="Serie">${serie}<br><span class="texto_tenue">ID: ${id}</span></td>
+                                    <td data-label="Equipo"><strong>${modelo}</strong><br><span class="texto_tenue">${tipoCI}</span></td>
+                                    <td data-label="Red">${host}<br><span class="texto_tenue">${ip}</span></td>
+                                    <td data-label="Ubicación">${suc}</td>
+                                    <td data-label="Estado"><span class="etiqueta ${claseEstado}">${est}</span></td>
+                                </tr>`;
+                    });
+                    cuerpo.innerHTML = html;
+                } else {
+                    alert("Error buscando: " + await respuesta.text());
+                }
+            } catch (error) {
+                mostrar_carga(false);
+                console.error("Error buscando:", error);
+                alert("Error de conexión con el servidor.");
+            }
+        }
+
+        // --- 2. FUNCIÓN EXPORTAR EXCEL ---
+        function exportar_excel() {
+            const txt = document.getElementById('txtBuscar').value;
+            const tipo = document.getElementById('selTipo').value;
+            const estado = document.getElementById('selEstado').value;
+
+            mostrar_carga(true, "Generando Excel...");
+
+            setTimeout(() => {
+                const url = `/api/productos/exportar?texto=${txt}&tipo=${tipo}&estado=${estado}`;
+                window.location.href = url;
+                mostrar_carga(false);
+            }, 1000);
         }
     </script>
 </body>

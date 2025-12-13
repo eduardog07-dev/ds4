@@ -13,6 +13,7 @@
             --color_primario: #007bff;
             --color_exito: #28a745;
             --color_secundario: #6c757d;
+            --color_error: #dc3545; /* Nuevo color para error */
             --fondo_claro: #f4f4f9;
         }
 
@@ -23,6 +24,103 @@
             padding: 20px;
             overflow-x: hidden;
         }
+
+        /* --- ESTILOS DE PANTALLA DE CARGA (ACTUALIZADO) --- */
+        #overlay_carga {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85); /* Fondo un poco más oscuro */
+            color: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem; /* Texto más grande */
+            z-index: 9999;
+            flex-direction: column;
+            transition: opacity 0.3s;
+        }
+
+        .spinner {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid var(--color_primario);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: girar 1s linear infinite;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* Estilos nuevos para iconos de éxito y error */
+        .icono-exito {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--color_exito);
+            color: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: bounceIn 0.5s;
+        }
+
+        .icono-error {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--color_error);
+            color: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: shake 0.5s;
+        }
+
+        @@keyframes girar {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @@keyframes bounceIn {
+            0% {
+                transform: scale(0);
+            }
+
+            60% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @@keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            75% {
+                transform: translateX(10px);
+            }
+        }
+        /* ------------------------------------------- */
 
         @@keyframes zoom_explosion {
             0% {
@@ -68,7 +166,7 @@
         }
 
         .animacion_salida {
-            animation: tv_apagada 0.9s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation: tv_apagada 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
         }
 
         .encabezado_flexible {
@@ -196,6 +294,13 @@
 </head>
 <body>
 
+    <div id="overlay_carga">
+        <div id="load_spinner" class="spinner"></div>
+        <div id="load_check" class="icono-exito">✔</div>
+        <div id="load_error" class="icono-error">✖</div>
+        <span id="texto_carga">Procesando...</span>
+    </div>
+
     <div class="contenedor_principal">
         <div class="encabezado_flexible">
             <h1>Nuevo Activo Tecnológico</h1>
@@ -203,34 +308,23 @@
         </div>
 
         <div class="panel_excel">
-            <span>¿Carga masiva de equipos? Utilice la plantilla de Excel.</span>
-            <button class="boton boton_excel">Importar Excel</button>
+            <span>¿Carga masiva de equipos? Utilice la plantilla de Excel o CSV.</span>
+            <input type="file" id="archivoExcel" hidden accept=".csv, .xlsx, .xls" onchange="subir_excel()" />
+            <button class="boton boton_excel" onclick="document.getElementById('archivoExcel').click()">Importar Excel</button>
         </div>
 
-        <form action="/Inventario/Guardar" method="post">
+        <form id="formProducto" onsubmit="guardar_datos_api(event)">
             <div class="cuadricula_formulario">
 
                 <div class="grupo_formulario">
                     <label>Número de Serie</label>
                     <input type="text" id="Serie" name="Serie" class="campo_resaltado" placeholder="Ej: CND823..." required oninput="sincronizar_identificador()" />
                 </div>
-                <div class="grupo_formulario">
-                    <label>Identificador</label>
-                    <input type="text" id="Identificador" name="Identificador" readonly title="Se llena igual que la serie" />
-                </div>
-                <div class="grupo_formulario">
-                    <label>Fec. Creación</label>
-                    <input type="text" id="FechaCreacion" name="FechaCreacion" readonly />
-                </div>
+                <div class="grupo_formulario"><label>Identificador</label><input type="text" id="Identificador" name="Identificador" readonly title="Se llena igual que la serie" /></div>
+                <div class="grupo_formulario"><label>Fec. Creación</label><input type="text" id="FechaCreacion" name="FechaCreacion" readonly /></div>
 
-                <div class="grupo_formulario">
-                    <label>Fabricante</label>
-                    <input type="text" name="Fabricante" placeholder="Ej: HP, Dell" />
-                </div>
-                <div class="grupo_formulario">
-                    <label>Modelo</label>
-                    <input type="text" name="Modelo" placeholder="Ej: Latitude 5420" />
-                </div>
+                <div class="grupo_formulario"><label>Fabricante</label><input type="text" name="Fabricante" placeholder="Ej: HP, Dell" /></div>
+                <div class="grupo_formulario"><label>Modelo</label><input type="text" name="Modelo" placeholder="Ej: Latitude 5420" /></div>
                 <div class="grupo_formulario">
                     <label>Tipo CI</label>
                     <select name="TipoCI">
@@ -242,31 +336,13 @@
                     </select>
                 </div>
 
-                <div class="grupo_formulario">
-                    <label>Hostname</label>
-                    <input type="text" name="Hostname" placeholder="Ej: PC-FINANZAS-01" />
-                </div>
-                <div class="grupo_formulario">
-                    <label>Dirección IP</label>
-                    <input type="text" name="IP" placeholder="192.168.x.x" />
-                </div>
-                <div class="grupo_formulario">
-                    <label>MAC Address</label>
-                    <input type="text" name="MAC" placeholder="AA:BB:CC:DD:EE:FF" />
-                </div>
-                <div class="grupo_formulario">
-                    <label>Sistema Operativo</label>
-                    <input type="text" name="SO" placeholder="Ej: Windows 10 Pro" />
-                </div>
+                <div class="grupo_formulario"><label>Hostname</label><input type="text" name="Hostname" placeholder="Ej: PC-FINANZAS-01" /></div>
+                <div class="grupo_formulario"><label>Dirección IP</label><input type="text" name="IP" placeholder="192.168.x.x" /></div>
+                <div class="grupo_formulario"><label>MAC Address</label><input type="text" name="MAC" placeholder="AA:BB:CC:DD:EE:FF" /></div>
+                <div class="grupo_formulario"><label>Sistema Operativo</label><input type="text" name="SO" placeholder="Ej: Windows 10 Pro" /></div>
 
-                <div class="grupo_formulario">
-                    <label>RAM (GB)</label>
-                    <input type="text" name="RAM" placeholder="Ej: 16GB" />
-                </div>
-                <div class="grupo_formulario">
-                    <label>Almacenamiento</label>
-                    <input type="text" name="Almacenamiento" placeholder="Ej: 512GB SSD" />
-                </div>
+                <div class="grupo_formulario"><label>RAM (GB)</label><input type="text" name="RAM" placeholder="Ej: 16GB" /></div>
+                <div class="grupo_formulario"><label>Almacenamiento</label><input type="text" name="Almacenamiento" placeholder="Ej: 512GB SSD" /></div>
 
                 <div class="grupo_formulario">
                     <label>Sucursal</label>
@@ -277,11 +353,7 @@
                     </select>
                 </div>
 
-                <div class="grupo_formulario">
-                    <label>Ubicación Detallada</label>
-                    <input type="text" name="Ubicacion" placeholder="Ej: Piso 2, Oficina 3" />
-                </div>
-
+                <div class="grupo_formulario"><label>Ubicación Detallada</label><input type="text" name="Ubicacion" placeholder="Ej: Piso 2, Oficina 3" /></div>
                 <div class="grupo_formulario">
                     <label>Estado</label>
                     <select name="Estado" class="campo_resaltado">
@@ -291,19 +363,9 @@
                     </select>
                 </div>
 
-                <div class="grupo_formulario">
-                    <label>Número de Activo</label>
-                    <input type="text" name="NumeroActivo" placeholder="Etiqueta interna" />
-                </div>
-                <div class="grupo_formulario">
-                    <label>Título / Descripción</label>
-                    <input type="text" name="Titulo" />
-                </div>
-                <div class="grupo_formulario">
-                    <label>Creado Por</label>
-                    <input type="text" name="CreadoPor" placeholder="EJ: EDUARDO MARMOLEJO" />
-                </div>
-
+                <div class="grupo_formulario"><label>Número de Activo</label><input type="text" name="NumeroActivo" placeholder="Etiqueta interna" /></div>
+                <div class="grupo_formulario"><label>Título / Descripción</label><input type="text" name="Titulo" /></div>
+                <div class="grupo_formulario"><label>Creado Por</label><input type="text" name="CreadoPor" placeholder="EJ: EDUARDO MARMOLEJO" /></div>
             </div>
 
             <div class="seccion_acciones">
@@ -314,15 +376,67 @@
     </div>
 
     <script>
+        // --- FUNCIÓN DE CONTROL VISUAL DE CARGA ---
+        function mostrar_carga(mostrar) {
+            const overlay = document.getElementById('overlay_carga');
+            const spinner = document.getElementById('load_spinner');
+            const check = document.getElementById('load_check');
+            const error = document.getElementById('load_error');
+            const texto = document.getElementById('texto_carga');
+
+            if (mostrar) {
+                // Reset a estado inicial (cargando)
+                overlay.style.display = 'flex';
+                spinner.style.display = 'block';
+                check.style.display = 'none';
+                error.style.display = 'none';
+                texto.innerText = "Procesando...";
+                texto.style.color = "white";
+            } else {
+                overlay.style.display = 'none';
+            }
+        }
+
+        // --- FUNCIÓN PARA MOSTRAR RESULTADO FINAL (Check/Error) ---
+        function finalizar_carga(exito, mensaje) {
+            const spinner = document.getElementById('load_spinner');
+            const check = document.getElementById('load_check');
+            const error = document.getElementById('load_error');
+            const texto = document.getElementById('texto_carga');
+
+            // Ocultamos el spinner
+            spinner.style.display = 'none';
+
+            if (exito) {
+                // Mostramos Check Verde
+                check.style.display = 'flex';
+                texto.innerText = "Completado"; // Mensaje solicitado
+                texto.style.color = "#28a745"; // Verde
+
+                // Esperamos un momento y redirigimos
+                setTimeout(() => {
+                    volver_al_inicio(null);
+                }, 1500);
+            } else {
+                // Mostramos X Roja
+                error.style.display = 'flex';
+                texto.innerText = "Ha ocurrido un error"; // Mensaje solicitado
+                texto.style.color = "#dc3545"; // Rojo
+
+                // Esperamos y cerramos para que intente de nuevo
+                setTimeout(() => {
+                    mostrar_carga(false);
+                    // Opcional: mostrar detalle técnico en alerta si es necesario
+                    if (mensaje) alert("Detalle: " + mensaje);
+                }, 2000);
+            }
+        }
+
         function volver_al_inicio(e) {
             if (e) e.preventDefault();
-
             var contenedor = document.querySelector('.contenedor_principal');
             contenedor.classList.add('animacion_salida');
-
-            setTimeout(function () {
-                location.href = '/Inventario/Index';
-            }, 400);
+            setTimeout(function () { location.href = '/Inventario/Index'; }, 400);
         }
 
         function sincronizar_identificador() {
@@ -334,6 +448,73 @@
             const ahora = new Date();
             document.getElementById('FechaCreacion').value = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         };
+
+        // --- LÓGICA DE GUARDADO ---
+        async function guardar_datos_api(e) {
+            e.preventDefault();
+            mostrar_carga(true); // Iniciamos spinner
+
+            const formulario = document.getElementById('formProducto');
+            const formData = new FormData(formulario);
+            const datosJson = Object.fromEntries(formData.entries());
+
+            try {
+                const respuesta = await fetch('/api/productos/guardar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datosJson)
+                });
+
+                if (respuesta.ok) {
+                    finalizar_carga(true, "Guardado");
+                } else {
+                    const errorTxt = await respuesta.text();
+                    finalizar_carga(false, errorTxt);
+                }
+            } catch (error) {
+                console.error(error);
+                finalizar_carga(false, "Error de red");
+            }
+        }
+
+        // --- LÓGICA DE IMPORTACIÓN ---
+        async function subir_excel() {
+            const input = document.getElementById('archivoExcel');
+            if (input.files.length === 0) return;
+
+            const archivo = input.files[0];
+
+            if (!archivo.name.endsWith('.csv') && !archivo.name.endsWith('.xlsx')) {
+                alert("Por favor suba un archivo .csv o .xlsx");
+                input.value = '';
+                return;
+            }
+
+            mostrar_carga(true); // Iniciamos spinner
+
+            const formData = new FormData();
+            formData.append('archivo', archivo);
+
+            try {
+                const res = await fetch('/api/productos/importar', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const json = await res.json();
+
+                if (res.ok) {
+                    finalizar_carga(true, json.mensaje);
+                } else {
+                    finalizar_carga(false, json.Message || "Error desconocido");
+                }
+            } catch (err) {
+                console.error(err);
+                finalizar_carga(false, "Error de conexión");
+            }
+
+            input.value = '';
+        }
     </script>
 </body>
 </html>

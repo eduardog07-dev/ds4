@@ -15,6 +15,7 @@
             --color_exito: #28a745;
             --color_advertencia: #ffc107;
             --color_info: #17a2b8;
+            --color_peligro: #dc3545; /* Nuevo: Rojo peligro */
             --fondo_oscuro: #343a40;
             --fondo_claro: #f4f4f9;
         }
@@ -35,12 +36,12 @@
             }
 
             40% {
-                transform: scale(1, 0.04);
+                transform: scale(1, 0.08);
                 opacity: 1;
             }
 
             100% {
-                transform: scale(0, 0.04);
+                transform: scale(0, 0.08);
                 opacity: 0;
             }
         }
@@ -56,7 +57,7 @@
         }
 
         .animacion_salida {
-            animation: tv_apagada 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            animation: tv_apagada 2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
         }
 
         h1 {
@@ -64,6 +65,72 @@
             text-align: center;
             margin-bottom: 30px;
         }
+
+        /* --- NUEVO: ESTILOS PARA EL DASHBOARD DE STOCK --- */
+        .dashboard_stock {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .tarjeta_stock {
+            padding: 15px;
+            border-radius: 6px;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s;
+        }
+
+            .tarjeta_stock:hover {
+                transform: translateY(-3px);
+            }
+
+        .ts_titulo {
+            font-size: 0.9rem;
+            font-weight: bold;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .ts_cantidad {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .ts_estado {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        /* Colores del Semáforo */
+        .bg_rojo {
+            background: linear-gradient(135deg, #ff6b6b, #ee5253);
+        }
+        /* Crítico */
+        .bg_naranja {
+            background: linear-gradient(135deg, #feca57, #ff9f43);
+        }
+        /* Bajo/Medio */
+        .bg_verde {
+            background: linear-gradient(135deg, #1dd1a1, #10ac84);
+        }
+        /* Ideal */
+        .bg_azul {
+            background: linear-gradient(135deg, #54a0ff, #2e86de);
+        }
+        /* Exceso */
+        /* ------------------------------------------------ */
 
         .barra_herramientas {
             display: flex;
@@ -136,16 +203,19 @@
             background-color: #f8f9fa;
         }
 
-        .stock_bajo {
-            color: #dc3545;
-            font-weight: bold;
-            background-color: #ffeaea;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-
+        /* --- CLASES DE ESTADO ACTUALIZADAS --- */
         .estado_ok {
             color: var(--color_exito);
+            font-weight: bold;
+        }
+
+        .estado_baja {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .estado_prestamo {
+            color: var(--color_advertencia);
             font-weight: bold;
         }
 
@@ -201,6 +271,10 @@
                     text-transform: uppercase;
                     font-size: 0.8rem;
                 }
+            /* Ajuste dashboard móvil */
+            .dashboard_stock {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -208,6 +282,11 @@
 
     <div class="contenedor_principal">
         <h1>Gestión de Inventario</h1>
+
+        <h3 style="margin-left:5px; color:#555;">Resumen de Stock (Modelos Operativos)</h3>
+        <div id="panel_stock" class="dashboard_stock">
+            <div style="text-align:center; width:100%; color:#777;">Cargando resumen...</div>
+        </div>
 
         <div class="barra_herramientas">
             <button class="boton boton_primario" onclick="navegar(event, '/Inventario/NuevoProducto')">
@@ -223,31 +302,16 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Código</th>
-                        <th>Producto</th>
-                        <th>Categoría</th>
-                        <th>Stock Actual</th>
-                        <th>Precio</th>
+                        <th>Serie</th>
+                        <th>Modelo</th>
+                        <th>Tipo</th>
+                        <th>Sucursal</th>
+                        <th>Ubicación</th>
                         <th>Estado</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td data-label="Código">HW-001</td>
-                        <td data-label="Producto">Monitor 24" LED</td>
-                        <td data-label="Categoría">Periféricos</td>
-                        <td data-label="Stock Actual">15</td>
-                        <td data-label="Precio">$120.00</td>
-                        <td data-label="Estado"><span class="estado_ok">Disponible</span></td>
-                    </tr>
-                    <tr>
-                        <td data-label="Código">HW-002</td>
-                        <td data-label="Producto">Teclado Mecánico</td>
-                        <td data-label="Categoría">Periféricos</td>
-                        <td data-label="Stock Actual"><span class="stock_bajo">2</span></td>
-                        <td data-label="Precio">$45.00</td>
-                        <td data-label="Estado"><span style="color:orange; font-weight:bold;">Stock Bajo</span></td>
-                    </tr>
+                <tbody id="tablaCuerpo">
+                    <tr><td colspan="6" style="text-align:center">Cargando inventario...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -256,15 +320,84 @@
     <script>
         function navegar(e, urlDestino) {
             if (e) e.preventDefault();
-
             var contenedor = document.querySelector('.contenedor_principal');
             contenedor.classList.add('animacion_salida');
+            setTimeout(function () { location.href = urlDestino; }, 600);
+        }
 
-            setTimeout(function () {
-                location.href = urlDestino;
-            }, 400);
+        // --- CARGA SIMULTÁNEA DE LISTA Y RESUMEN ---
+        window.onload = function () {
+            cargar_lista();
+            cargar_resumen();
+        };
+
+        async function cargar_lista() {
+            try {
+                const respuesta = await fetch('/api/productos/listar');
+                if (respuesta.ok) {
+                    const productos = await respuesta.json();
+                    const cuerpo = document.getElementById('tablaCuerpo');
+
+                    if (productos.length === 0) {
+                        cuerpo.innerHTML = '<tr><td colspan="6" style="text-align:center">No hay activos registrados aún.</td></tr>';
+                        return;
+                    }
+
+                    let html = '';
+                    productos.forEach(p => {
+                        let claseEstado = 'estado_ok';
+                        if (p.Estado === 'Descartado') claseEstado = 'estado_baja';
+                        if (p.Estado === 'Préstamo' || p.Estado === 'Prestamo') claseEstado = 'estado_prestamo';
+
+                        html += `
+                                <tr>
+                                    <td data-label="Serie">${p.Serie}</td>
+                                    <td data-label="Modelo">${p.Modelo}</td>
+                                    <td data-label="Tipo">${p.TipoCI}</td>
+                                    <td data-label="Sucursal">${p.Sucursal}</td>
+                                    <td data-label="Ubicación">${p.Ubicacion}</td>
+                                    <td data-label="Estado"><span class="${claseEstado}">${p.Estado}</span></td>
+                                </tr>
+                            `;
+                    });
+                    cuerpo.innerHTML = html;
+                }
+            } catch (error) { console.error("Error lista:", error); }
+        }
+
+        // --- NUEVO: FUNCIÓN PARA PINTAR EL DASHBOARD ---
+        async function cargar_resumen() {
+            try {
+                const respuesta = await fetch('/api/productos/resumen');
+                if (respuesta.ok) {
+                    const datos = await respuesta.json();
+                    const panel = document.getElementById('panel_stock');
+
+                    if (datos.length === 0) {
+                        panel.innerHTML = '<div style="grid-column: 1/-1; text-align:center;">Sin datos para resumir</div>';
+                        return;
+                    }
+
+                    let html = '';
+                    datos.forEach(d => {
+                        // Asignamos clase CSS según el color que devuelve la API
+                        let claseColor = 'bg_verde';
+                        if (d.Color === 'rojo') claseColor = 'bg_rojo';
+                        if (d.Color === 'naranja') claseColor = 'bg_naranja';
+                        if (d.Color === 'azul') claseColor = 'bg_azul';
+
+                        html += `
+                                <div class="tarjeta_stock ${claseColor}">
+                                    <div class="ts_titulo">${d.Modelo}</div>
+                                    <div class="ts_cantidad">${d.Cantidad}</div>
+                                    <div class="ts_estado">${d.Estado}</div>
+                                </div>
+                            `;
+                    });
+                    panel.innerHTML = html;
+                }
+            } catch (error) { console.error("Error resumen:", error); }
         }
     </script>
-
 </body>
 </html>
