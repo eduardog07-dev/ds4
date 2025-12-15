@@ -14,6 +14,8 @@
             --color_exito: #28a745;
             --color_info: #17a2b8;
             --color_secundario: #6c757d;
+            --color_peligro: #dc3545;
+            --color_advertencia: #ffc107;
             --fondo_oscuro: #343a40;
             --fondo_claro: #f4f4f9;
         }
@@ -26,7 +28,6 @@
             overflow-x: hidden;
         }
 
-        /* --- ESTILOS DE PANTALLA DE CARGA --- */
         #overlay_carga {
             position: fixed;
             top: 0;
@@ -39,7 +40,7 @@
             justify-content: center;
             align-items: center;
             font-size: 2rem;
-            z-index: 9999;
+            z-index: 20000; /* Mayor que los modales */
             flex-direction: column;
         }
 
@@ -62,7 +63,6 @@
                 transform: rotate(360deg);
             }
         }
-        /* ------------------------------------------- */
 
         @@keyframes zoom_explosion {
             0% {
@@ -145,11 +145,18 @@
             color: #555;
         }
 
-        input[type="text"], select {
+        input[type="text"], input[type="number"], select {
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
             min-width: 200px;
+        }
+
+        input[readonly] {
+            background-color: #e9ecef;
+            color: #6c757d;
+            border-color: #ced4da;
+            cursor: not-allowed;
         }
 
         .boton {
@@ -182,6 +189,29 @@
 
         .boton_excel {
             background-color: var(--color_info);
+        }
+
+        .boton_eliminar_masivo {
+            background-color: var(--color_peligro);
+        }
+
+        .btn_tabla {
+            padding: 6px 10px;
+            font-size: 12px;
+            margin-right: 5px;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn_editar {
+            background-color: var(--color_advertencia);
+            color: #333;
+        }
+
+        .btn_eliminar {
+            background-color: var(--color_peligro);
         }
 
         .area_resultados {
@@ -218,7 +248,6 @@
             font-size: 0.8rem;
         }
 
-        /* Estilos de etiquetas */
         .etiqueta_operativo {
             background-color: #d4edda;
             color: #155724;
@@ -232,6 +261,51 @@
         .etiqueta_prestamo {
             background-color: #fff3cd;
             color: #856404;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-contenido {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            width: 600px;
+            max-width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: zoom_explosion 0.3s forwards;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .modal-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            text-align: right;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
         }
 
         @@media (max-width: 768px) {
@@ -250,35 +324,9 @@
                 margin-top: 5px;
             }
 
-            table, thead, tbody, th, td, tr {
-                display: block;
+            .modal-body {
+                grid-template-columns: 1fr;
             }
-
-                thead tr {
-                    position: absolute;
-                    top: -9999px;
-                    left: -9999px;
-                }
-
-            tr {
-                border: 1px solid #ccc;
-                margin-bottom: 10px;
-                padding: 10px;
-                border-radius: 5px;
-            }
-
-            td {
-                border: none;
-                position: relative;
-                padding-left: 50%;
-            }
-
-                td:before {
-                    position: absolute;
-                    left: 10px;
-                    content: attr(data-label);
-                    font-weight: bold;
-                }
         }
     </style>
 </head>
@@ -287,6 +335,87 @@
     <div id="overlay_carga">
         <div class="spinner"></div>
         <span id="texto_carga">Procesando...</span>
+    </div>
+
+    <div id="modalConfirmacion" class="modal">
+        <div class="modal-contenido" style="width: 400px; text-align: center;">
+            <div class="modal-header" style="justify-content: center; border-bottom: none;">
+                <h2 style="margin:0; color: var(--color_peligro);">⚠ Confirmar Eliminación</h2>
+            </div>
+            <div style="padding: 10px 0;">
+                <p id="txtMensajeConfirmacion" style="font-size: 1.1em; margin-bottom: 20px;">¿Está seguro?</p>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+                <button class="boton boton_volver" onclick="cerrar_confirmacion()">Cancelar</button>
+                <button class="boton boton_eliminar_masivo" onclick="proceder_confirmacion()">Sí, Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalEdicion" class="modal">
+        <div class="modal-contenido">
+            <div class="modal-header">
+                <h2 style="margin:0;">Editar Registro</h2>
+                <span style="cursor:pointer; font-size:24px;" onclick="cerrar_modal()">&times;</span>
+            </div>
+            <div class="modal-body">
+
+                <div class="grupo_formulario">
+                    <label>Serie (No editable):</label>
+                    <input type="text" id="editSerie" readonly>
+                </div>
+                <div class="grupo_formulario">
+                    <label>Modelo (No editable):</label>
+                    <input type="text" id="editModelo" readonly>
+                </div>
+                <div class="grupo_formulario">
+                    <label>Tipo (No editable):</label>
+                    <input type="text" id="editTipo" readonly>
+                </div>
+
+                <div class="grupo_formulario">
+                    <label>Título:</label>
+                    <input type="text" id="editTitulo">
+                </div>
+                <div class="grupo_formulario">
+                    <label>Hostname:</label>
+                    <input type="text" id="editHostname">
+                </div>
+                <div class="grupo_formulario">
+                    <label>RAM (GB):</label>
+                    <input type="number" id="editRam">
+                </div>
+                <div class="grupo_formulario">
+                    <label>Almacenamiento:</label>
+                    <input type="text" id="editAlmacenamiento">
+                </div>
+                <div class="grupo_formulario">
+                    <label>Sistema Operativo:</label>
+                    <input type="text" id="editSO">
+                </div>
+                <div class="grupo_formulario">
+                    <label>Sucursal:</label>
+                    <input type="text" id="editSucursal">
+                </div>
+                <div class="grupo_formulario">
+                    <label>Ubicación:</label>
+                    <input type="text" id="editUbicacion">
+                </div>
+                <div class="grupo_formulario">
+                    <label>Estado:</label>
+                    <select id="editEstado">
+                        <option value="Operativo">Operativo</option>
+                        <option value="Prestamo">Préstamo</option>
+                        <option value="En Reparacion">En Reparación</option>
+                        <option value="Descartado">Descartado</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="boton boton_volver" onclick="cerrar_modal()">Cancelar</button>
+                <button class="boton boton_buscar" onclick="guardar_edicion()">Guardar Cambios</button>
+            </div>
+        </div>
     </div>
 
     <div class="contenedor_principal">
@@ -309,6 +438,7 @@
                     <option value="Desktop">Desktop</option>
                     <option value="Servidor">Servidor</option>
                     <option value="Tablet">Tablet</option>
+                    <option value="Perifericos">Periférico</option>
                 </select>
             </div>
 
@@ -330,9 +460,10 @@
             <div style="flex-grow: 1;"></div>
 
             <div class="grupo_formulario">
-                <label>Reportes:</label>
-                <div style="display:flex;">
-                    <button class="boton boton_excel" onclick="exportar_excel()">📊 Exportar Reporte</button>
+                <label>Acciones:</label>
+                <div style="display:flex; gap:10px;">
+                    <button class="boton boton_eliminar_masivo" id="btnEliminarMasivo" onclick="eliminar_masivo()">🗑 Eliminar (0)</button>
+                    <button class="boton boton_excel" onclick="exportar_excel()">📊 Exportar</button>
                 </div>
             </div>
         </div>
@@ -342,22 +473,26 @@
             <table>
                 <thead>
                     <tr>
+                        <th style="width:40px; text-align:center;"><input type="checkbox" id="chkTodos" onclick="toggle_todos(this)"></th>
                         <th>Serie (ID)</th>
                         <th>Equipo / Modelo</th>
                         <th>Red (IP/Host)</th>
                         <th>Ubicación</th>
                         <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tablaResultados">
-                    <tr><td colspan="5" style="text-align:center; padding: 20px; color: #777;">Utilice los filtros para buscar...</td></tr>
+                    <tr><td colspan="7" style="text-align:center; padding: 20px; color: #777;">Utilice los filtros para buscar...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
     <script>
-        // Función para mostrar/ocultar carga
+        let resultados_cache = [];
+        let accion_confirmada = null; // Variable para almacenar la función a ejecutar
+
         function mostrar_carga(mostrar, mensaje = "Procesando...") {
             const overlay = document.getElementById('overlay_carga');
             const texto = document.getElementById('texto_carga');
@@ -369,80 +504,194 @@
             if (e) e.preventDefault();
             var contenedor = document.querySelector('.contenedor_principal');
             contenedor.classList.add('animacion_salida');
-            setTimeout(function () { location.href = '/Inventario/Index'; }, 400);
+            setTimeout(function () {
+                location.href = '/Inventario/Index';
+            }, 400);
         }
 
-        // --- 1. FUNCIÓN BUSCAR ---
+        function actualizar_contador_eliminacion() {
+            const marcados = document.querySelectorAll('.chk_item:checked').length;
+            const btn = document.getElementById('btnEliminarMasivo');
+            btn.innerText = `🗑 Eliminar (${marcados})`;
+        }
+
         async function buscar_productos() {
             const txt = document.getElementById('txtBuscar').value;
             const tipo = document.getElementById('selTipo').value;
             const estado = document.getElementById('selEstado').value;
 
-            mostrar_carga(true, "Buscando..."); // Activar Spinner
+            mostrar_carga(true, "Buscando...");
 
             const url = `/api/productos/buscar?texto=${txt}&tipo=${tipo}&estado=${estado}`;
 
             try {
                 const respuesta = await fetch(url);
-                mostrar_carga(false); // Desactivar Spinner
+                mostrar_carga(false);
 
                 if (respuesta.ok) {
-                    const productos = await respuesta.json();
+                    resultados_cache = await respuesta.json();
                     const cuerpo = document.getElementById('tablaResultados');
 
-                    if (productos.length === 0) {
-                        cuerpo.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">No se encontraron resultados.</td></tr>';
+                    if (resultados_cache.length === 0) {
+                        cuerpo.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">No se encontraron resultados.</td></tr>';
+                        actualizar_contador_eliminacion();
                         return;
                     }
 
                     let html = '';
-                    productos.forEach(p => {
+                    resultados_cache.forEach(p => {
                         let claseEstado = 'etiqueta_operativo';
                         if (p.Estado === 'Descartado') claseEstado = 'etiqueta_baja';
-                        // Normalizamos la lógica para detectar el préstamo con o sin tilde en la visualización
                         if (p.Estado === 'Préstamo' || p.Estado === 'Prestamo') claseEstado = 'etiqueta_prestamo';
 
-                        // Validación de datos nulos
-                        const serie = p.Serie || "---";
-                        const id = p.Identificador || serie;
-                        const modelo = p.Modelo || "---";
-                        const tipoCI = p.TipoCI || "---";
-                        const host = p.Hostname || "---";
-                        const ip = p.IP || "---";
-                        const suc = p.Sucursal || "---";
-                        const est = p.Estado || "---";
-
                         html += `
-                                <tr>
-                                    <td data-label="Serie">${serie}<br><span class="texto_tenue">ID: ${id}</span></td>
-                                    <td data-label="Equipo"><strong>${modelo}</strong><br><span class="texto_tenue">${tipoCI}</span></td>
-                                    <td data-label="Red">${host}<br><span class="texto_tenue">${ip}</span></td>
-                                    <td data-label="Ubicación">${suc}</td>
-                                    <td data-label="Estado"><span class="etiqueta ${claseEstado}">${est}</span></td>
-                                </tr>`;
+                            <tr>
+                                <td style="text-align:center;">
+                                    <input type="checkbox" class="chk_item" value="${p.Serie}" onchange="actualizar_contador_eliminacion()">
+                                </td>
+                                <td>${p.Serie || "---"}<br><span class="texto_tenue">ID: ${p.Identificador || p.Serie}</span></td>
+                                <td><strong>${p.Modelo || "---"}</strong><br><span class="texto_tenue">${p.TipoCI || "---"}</span></td>
+                                <td>${p.Hostname || "---"}<br><span class="texto_tenue">${p.IP || "---"}</span></td>
+                                <td>${p.Sucursal || "---"}</td>
+                                <td><span class="etiqueta ${claseEstado}">${p.Estado || "---"}</span></td>
+                                <td>
+                                    <button class="btn_tabla btn_editar" onclick="abrir_modal('${p.Serie}')">✏</button>
+                                    <button class="btn_tabla btn_eliminar" onclick="eliminar_individual('${p.Serie}')">🗑</button>
+                                </td>
+                            </tr>`;
                     });
                     cuerpo.innerHTML = html;
-                } else {
-                    alert("Error buscando: " + await respuesta.text());
+                    document.getElementById('chkTodos').checked = false;
+                    actualizar_contador_eliminacion();
                 }
-            } catch (error) {
+            }
+            catch (error) {
                 mostrar_carga(false);
-                console.error("Error buscando:", error);
-                alert("Error de conexión con el servidor.");
+                alert("Error de conexión.");
             }
         }
 
-        // --- 2. FUNCIÓN EXPORTAR EXCEL ---
+        function toggle_todos(source) {
+            const checkboxes = document.querySelectorAll('.chk_item');
+            checkboxes.forEach(c => c.checked = source.checked);
+            actualizar_contador_eliminacion();
+        }
+
+        // --- LÓGICA DE CONFIRMACIÓN ---
+        function solicitar_confirmacion(mensaje, accion) {
+            document.getElementById('txtMensajeConfirmacion').innerText = mensaje;
+            accion_confirmada = accion;
+            document.getElementById('modalConfirmacion').style.display = 'flex';
+        }
+
+        function cerrar_confirmacion() {
+            document.getElementById('modalConfirmacion').style.display = 'none';
+            accion_confirmada = null;
+        }
+
+        function proceder_confirmacion() {
+            if (accion_confirmada) accion_confirmada();
+            cerrar_confirmacion();
+        }
+
+        function abrir_modal(serie) {
+            const p = resultados_cache.find(x => x.Serie == serie);
+            if (!p) return;
+
+            document.getElementById('editSerie').value = p.Serie;
+            document.getElementById('editModelo').value = p.Modelo || "";
+            document.getElementById('editTipo').value = p.TipoCI || "";
+            document.getElementById('editTitulo').value = p.Titulo || "";
+            document.getElementById('editHostname').value = p.Hostname || "";
+            document.getElementById('editRam').value = p.RAM || "";
+            document.getElementById('editAlmacenamiento').value = p.Almacenamiento || "";
+            document.getElementById('editSO').value = p.SO || "";
+            document.getElementById('editSucursal').value = p.Sucursal || "";
+            document.getElementById('editUbicacion').value = p.Ubicacion || "";
+            document.getElementById('editEstado').value = p.Estado;
+
+            document.getElementById('modalEdicion').style.display = "flex";
+        }
+
+        function cerrar_modal() {
+            document.getElementById('modalEdicion').style.display = "none";
+        }
+
+        async function guardar_edicion() {
+            const data =
+            {
+                Serie: document.getElementById('editSerie').value,
+                Titulo: document.getElementById('editTitulo').value,
+                Hostname: document.getElementById('editHostname').value,
+                RAM: document.getElementById('editRam').value,
+                Almacenamiento: document.getElementById('editAlmacenamiento').value,
+                SO: document.getElementById('editSO').value,
+                Sucursal: document.getElementById('editSucursal').value,
+                Ubicacion: document.getElementById('editUbicacion').value,
+                Estado: document.getElementById('editEstado').value
+            };
+
+            mostrar_carga(true, "Guardando...");
+            try {
+                const res = await fetch('/api/productos/actualizar',
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                mostrar_carga(false);
+                if (res.ok) {
+                    cerrar_modal();
+                    buscar_productos();
+                }
+            }
+            catch (e) { mostrar_carga(false); }
+        }
+
+        function eliminar_individual(serie) {
+            solicitar_confirmacion(`¿Desea eliminar el registro con serie ${serie}?`, async () => {
+                mostrar_carga(true, "Eliminando...");
+                try {
+                    const res = await fetch('/api/productos/eliminar',
+                        {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(serie)
+                        });
+                    mostrar_carga(false);
+                    if (res.ok) buscar_productos();
+                }
+                catch (e) { mostrar_carga(false); }
+            });
+        }
+
+        function eliminar_masivo() {
+            const seleccionados = Array.from(document.querySelectorAll('.chk_item:checked')).map(c => c.value);
+            if (seleccionados.length === 0) return alert("Seleccione al menos uno.");
+
+            solicitar_confirmacion(`¿Desea eliminar los ${seleccionados.length} elementos seleccionados?`, async () => {
+                mostrar_carga(true, "Eliminando masivamente...");
+                try {
+                    const res = await fetch('/api/productos/eliminarMasivo',
+                        {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(seleccionados)
+                        });
+                    mostrar_carga(false);
+                    if (res.ok) buscar_productos();
+                }
+                catch (e) { mostrar_carga(false); }
+            });
+        }
+
         function exportar_excel() {
             const txt = document.getElementById('txtBuscar').value;
             const tipo = document.getElementById('selTipo').value;
             const estado = document.getElementById('selEstado').value;
-
             mostrar_carga(true, "Generando Excel...");
-
             setTimeout(() => {
-                const url = `/api/productos/exportar?texto=${txt}&tipo=${tipo}&estado=${estado}`;
-                window.location.href = url;
+                window.location.href = `/api/productos/exportar?texto=${txt}&tipo=${tipo}&estado=${estado}`;
                 mostrar_carga(false);
             }, 1000);
         }

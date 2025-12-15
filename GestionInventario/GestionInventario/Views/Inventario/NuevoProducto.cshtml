@@ -13,7 +13,7 @@
             --color_primario: #007bff;
             --color_exito: #28a745;
             --color_secundario: #6c757d;
-            --color_error: #dc3545; /* Nuevo color para error */
+            --color_error: #dc3545;
             --fondo_claro: #f4f4f9;
         }
 
@@ -25,19 +25,18 @@
             overflow-x: hidden;
         }
 
-        /* --- ESTILOS DE PANTALLA DE CARGA (ACTUALIZADO) --- */
         #overlay_carga {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85); /* Fondo un poco más oscuro */
+            background: rgba(0,0,0,0.85);
             color: white;
             display: none;
             justify-content: center;
             align-items: center;
-            font-size: 1.5rem; /* Texto más grande */
+            font-size: 1.5rem;
             z-index: 9999;
             flex-direction: column;
             transition: opacity 0.3s;
@@ -54,7 +53,6 @@
             display: block;
         }
 
-        /* Estilos nuevos para iconos de éxito y error */
         .icono-exito {
             width: 80px;
             height: 80px;
@@ -84,75 +82,32 @@
         }
 
         @@keyframes girar {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @@keyframes bounceIn {
-            0% {
-                transform: scale(0);
-            }
-
-            60% {
-                transform: scale(1.2);
-            }
-
-            100% {
-                transform: scale(1);
-            }
+            0% { transform: scale(0); }
+            60% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
 
         @@keyframes shake {
-            0%, 100% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-10px);
-            }
-
-            75% {
-                transform: translateX(10px);
-            }
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
-        /* ------------------------------------------- */
 
         @@keyframes zoom_explosion {
-            0% {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-
-            60% {
-                transform: scale(1.05);
-            }
-
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
+            0% { opacity: 0; transform: scale(0.5); }
+            60% { transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
         @@keyframes tv_apagada {
-            0% {
-                transform: scale(1, 1);
-                opacity: 1;
-            }
-
-            40% {
-                transform: scale(1, 0.05);
-                opacity: 1;
-            }
-
-            100% {
-                transform: scale(0, 0.04);
-                opacity: 0;
-            }
+            0% { transform: scale(1, 1); opacity: 1; }
+            40% { transform: scale(1, 0.05); opacity: 1; }
+            100% { transform: scale(0, 0.04); opacity: 0; }
         }
 
         .contenedor_principal {
@@ -222,12 +177,12 @@
             background-color: #fff;
         }
 
-            input[readonly] {
-                background-color: #f0f0f0;
-                cursor: not-allowed;
-                color: #666;
-                font-weight: bold;
-            }
+        input[readonly] {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+            color: #666;
+            font-weight: bold;
+        }
 
         .campo_resaltado {
             border: 1px solid var(--color_primario);
@@ -253,42 +208,22 @@
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
-            .boton:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            }
-
-        .boton_guardar {
-            background-color: var(--color_primario);
-            color: white;
+        .boton:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
-        .boton_cancelar {
-            background-color: var(--color_secundario);
-            color: white;
-        }
-
-        .boton_excel {
-            background-color: var(--color_exito);
-            color: white;
-        }
+        .boton_guardar { background-color: var(--color_primario); color: white; }
+        .boton_cancelar { background-color: var(--color_secundario); color: white; }
+        .boton_excel { background-color: var(--color_exito); color: white; }
 
         @@media (max-width: 900px) {
-            .cuadricula_formulario {
-                grid-template-columns: 1fr 1fr;
-            }
+            .cuadricula_formulario { grid-template-columns: 1fr 1fr; }
         }
 
         @@media (max-width: 600px) {
-            .cuadricula_formulario {
-                grid-template-columns: 1fr;
-            }
-
-            .encabezado_flexible {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
+            .cuadricula_formulario { grid-template-columns: 1fr; }
+            .encabezado_flexible { flex-direction: column; gap: 15px; text-align: center; }
         }
     </style>
 </head>
@@ -308,41 +243,38 @@
         </div>
 
         <div class="panel_excel">
-            <span>¿Carga masiva de equipos? Utilice la plantilla de Excel o CSV.</span>
+            <span>¿Carga masiva? Utilice la plantilla Excel o CSV.</span>
             <input type="file" id="archivoExcel" hidden accept=".csv, .xlsx, .xls" onchange="subir_excel()" />
-            <button class="boton boton_excel" onclick="document.getElementById('archivoExcel').click()">Importar Excel</button>
+            <button class="boton boton_excel" onclick="document.getElementById('archivoExcel').click()">Importar Archivo</button>
         </div>
 
         <form id="formProducto" onsubmit="guardar_datos_api(event)">
             <div class="cuadricula_formulario">
-
                 <div class="grupo_formulario">
                     <label>Número de Serie</label>
                     <input type="text" id="Serie" name="Serie" class="campo_resaltado" placeholder="Ej: CND823..." required oninput="sincronizar_identificador()" />
                 </div>
-                <div class="grupo_formulario"><label>Identificador</label><input type="text" id="Identificador" name="Identificador" readonly title="Se llena igual que la serie" /></div>
+                <div class="grupo_formulario"><label>Identificador</label><input type="text" id="Identificador" name="Identificador" readonly /></div>
                 <div class="grupo_formulario"><label>Fec. Creación</label><input type="text" id="FechaCreacion" name="FechaCreacion" readonly /></div>
 
-                <div class="grupo_formulario"><label>Fabricante</label><input type="text" name="Fabricante" placeholder="Ej: HP, Dell" /></div>
-                <div class="grupo_formulario"><label>Modelo</label><input type="text" name="Modelo" placeholder="Ej: Latitude 5420" /></div>
+                <div class="grupo_formulario"><label>Fabricante</label><input type="text" name="Fabricante" /></div>
+                <div class="grupo_formulario"><label>Modelo</label><input type="text" name="Modelo" /></div>
                 <div class="grupo_formulario">
                     <label>Tipo CI</label>
                     <select name="TipoCI">
                         <option value="Laptop">Laptop</option>
                         <option value="Desktop">Desktop</option>
                         <option value="Servidor">Servidor</option>
-                        <option value="Tablet">Tablet</option>
-                        <option value="Periferico">Periférico</option>
                     </select>
                 </div>
 
-                <div class="grupo_formulario"><label>Hostname</label><input type="text" name="Hostname" placeholder="Ej: PC-FINANZAS-01" /></div>
-                <div class="grupo_formulario"><label>Dirección IP</label><input type="text" name="IP" placeholder="192.168.x.x" /></div>
-                <div class="grupo_formulario"><label>MAC Address</label><input type="text" name="MAC" placeholder="AA:BB:CC:DD:EE:FF" /></div>
-                <div class="grupo_formulario"><label>Sistema Operativo</label><input type="text" name="SO" placeholder="Ej: Windows 10 Pro" /></div>
+                <div class="grupo_formulario"><label>Hostname</label><input type="text" name="Hostname" /></div>
+                <div class="grupo_formulario"><label>Dirección IP</label><input type="text" name="IP" /></div>
+                <div class="grupo_formulario"><label>MAC Address</label><input type="text" name="MAC" /></div>
+                <div class="grupo_formulario"><label>Sistema Operativo</label><input type="text" name="SO" /></div>
 
-                <div class="grupo_formulario"><label>RAM (GB)</label><input type="text" name="RAM" placeholder="Ej: 16GB" /></div>
-                <div class="grupo_formulario"><label>Almacenamiento</label><input type="text" name="Almacenamiento" placeholder="Ej: 512GB SSD" /></div>
+                <div class="grupo_formulario"><label>RAM (GB)</label><input type="text" name="RAM" /></div>
+                <div class="grupo_formulario"><label>Almacenamiento</label><input type="text" name="Almacenamiento" /></div>
 
                 <div class="grupo_formulario">
                     <label>Sucursal</label>
@@ -353,7 +285,7 @@
                     </select>
                 </div>
 
-                <div class="grupo_formulario"><label>Ubicación Detallada</label><input type="text" name="Ubicacion" placeholder="Ej: Piso 2, Oficina 3" /></div>
+                <div class="grupo_formulario"><label>Ubicación Detallada</label><input type="text" name="Ubicacion" /></div>
                 <div class="grupo_formulario">
                     <label>Estado</label>
                     <select name="Estado" class="campo_resaltado">
@@ -363,9 +295,9 @@
                     </select>
                 </div>
 
-                <div class="grupo_formulario"><label>Número de Activo</label><input type="text" name="NumeroActivo" placeholder="Etiqueta interna" /></div>
+                <div class="grupo_formulario"><label>Número de Activo</label><input type="text" name="NumeroActivo" /></div>
                 <div class="grupo_formulario"><label>Título / Descripción</label><input type="text" name="Titulo" /></div>
-                <div class="grupo_formulario"><label>Creado Por</label><input type="text" name="CreadoPor" placeholder="EJ: EDUARDO MARMOLEJO" /></div>
+                <div class="grupo_formulario"><label>Creado Por</label><input type="text" name="CreadoPor" /></div>
             </div>
 
             <div class="seccion_acciones">
@@ -376,7 +308,6 @@
     </div>
 
     <script>
-        // --- FUNCIÓN DE CONTROL VISUAL DE CARGA ---
         function mostrar_carga(mostrar) {
             const overlay = document.getElementById('overlay_carga');
             const spinner = document.getElementById('load_spinner');
@@ -385,7 +316,6 @@
             const texto = document.getElementById('texto_carga');
 
             if (mostrar) {
-                // Reset a estado inicial (cargando)
                 overlay.style.display = 'flex';
                 spinner.style.display = 'block';
                 check.style.display = 'none';
@@ -397,36 +327,25 @@
             }
         }
 
-        // --- FUNCIÓN PARA MOSTRAR RESULTADO FINAL (Check/Error) ---
         function finalizar_carga(exito, mensaje) {
             const spinner = document.getElementById('load_spinner');
             const check = document.getElementById('load_check');
             const error = document.getElementById('load_error');
             const texto = document.getElementById('texto_carga');
 
-            // Ocultamos el spinner
             spinner.style.display = 'none';
 
             if (exito) {
-                // Mostramos Check Verde
                 check.style.display = 'flex';
-                texto.innerText = "Completado"; // Mensaje solicitado
-                texto.style.color = "#28a745"; // Verde
-
-                // Esperamos un momento y redirigimos
-                setTimeout(() => {
-                    volver_al_inicio(null);
-                }, 1500);
+                texto.innerText = "Completado";
+                texto.style.color = "#28a745";
+                setTimeout(() => { volver_al_inicio(null); }, 1500);
             } else {
-                // Mostramos X Roja
                 error.style.display = 'flex';
-                texto.innerText = "Ha ocurrido un error"; // Mensaje solicitado
-                texto.style.color = "#dc3545"; // Rojo
-
-                // Esperamos y cerramos para que intente de nuevo
+                texto.innerText = "Error";
+                texto.style.color = "#dc3545";
                 setTimeout(() => {
                     mostrar_carga(false);
-                    // Opcional: mostrar detalle técnico en alerta si es necesario
                     if (mensaje) alert("Detalle: " + mensaje);
                 }, 2000);
             }
@@ -434,14 +353,12 @@
 
         function volver_al_inicio(e) {
             if (e) e.preventDefault();
-            var contenedor = document.querySelector('.contenedor_principal');
-            contenedor.classList.add('animacion_salida');
+            document.querySelector('.contenedor_principal').classList.add('animacion_salida');
             setTimeout(function () { location.href = '/Inventario/Index'; }, 400);
         }
 
         function sincronizar_identificador() {
-            const serie = document.getElementById('Serie').value;
-            document.getElementById('Identificador').value = serie;
+            document.getElementById('Identificador').value = document.getElementById('Serie').value;
         }
 
         window.onload = function () {
@@ -449,13 +366,10 @@
             document.getElementById('FechaCreacion').value = ahora.toLocaleDateString() + ' ' + ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         };
 
-        // --- LÓGICA DE GUARDADO ---
         async function guardar_datos_api(e) {
             e.preventDefault();
-            mostrar_carga(true); // Iniciamos spinner
-
-            const formulario = document.getElementById('formProducto');
-            const formData = new FormData(formulario);
+            mostrar_carga(true);
+            const formData = new FormData(document.getElementById('formProducto'));
             const datosJson = Object.fromEntries(formData.entries());
 
             try {
@@ -464,55 +378,33 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(datosJson)
                 });
-
-                if (respuesta.ok) {
-                    finalizar_carga(true, "Guardado");
-                } else {
-                    const errorTxt = await respuesta.text();
-                    finalizar_carga(false, errorTxt);
-                }
-            } catch (error) {
-                console.error(error);
-                finalizar_carga(false, "Error de red");
-            }
+                if (respuesta.ok) finalizar_carga(true);
+                else finalizar_carga(false, await respuesta.text());
+            } catch (error) { finalizar_carga(false, "Error de red"); }
         }
 
-        // --- LÓGICA DE IMPORTACIÓN ---
         async function subir_excel() {
             const input = document.getElementById('archivoExcel');
             if (input.files.length === 0) return;
-
             const archivo = input.files[0];
 
-            if (!archivo.name.endsWith('.csv') && !archivo.name.endsWith('.xlsx')) {
-                alert("Por favor suba un archivo .csv o .xlsx");
+            // Validar extensiones (incluyendo .xls)
+            if (!archivo.name.match(/\.(csv|xlsx|xls)$/i)) {
+                alert("Formato no válido. Use .csv, .xlsx o .xls");
                 input.value = '';
                 return;
             }
 
-            mostrar_carga(true); // Iniciamos spinner
-
+            mostrar_carga(true);
             const formData = new FormData();
             formData.append('archivo', archivo);
 
             try {
-                const res = await fetch('/api/productos/importar', {
-                    method: 'POST',
-                    body: formData
-                });
-
+                const res = await fetch('/api/productos/importar', { method: 'POST', body: formData });
                 const json = await res.json();
-
-                if (res.ok) {
-                    finalizar_carga(true, json.mensaje);
-                } else {
-                    finalizar_carga(false, json.Message || "Error desconocido");
-                }
-            } catch (err) {
-                console.error(err);
-                finalizar_carga(false, "Error de conexión");
-            }
-
+                if (res.ok) finalizar_carga(true, json.mensaje);
+                else finalizar_carga(false, json.Message || "Error en importación");
+            } catch (err) { finalizar_carga(false, "Error de conexión"); }
             input.value = '';
         }
     </script>

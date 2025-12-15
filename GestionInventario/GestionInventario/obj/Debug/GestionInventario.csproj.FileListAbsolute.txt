@@ -93,3 +93,11 @@ C:\Users\ANK1T3S1S\source\repos\ds4\Proyecto Final\GestionInventario\GestionInve
 C:\Users\ANK1T3S1S\source\repos\ds4\Proyecto Final\GestionInventario\GestionInventario\obj\Debug\GestionI.14355B1F.Up2Date
 C:\Users\ANK1T3S1S\source\repos\ds4\Proyecto Final\GestionInventario\GestionInventario\obj\Debug\GestionInventario.dll
 C:\Users\ANK1T3S1S\source\repos\ds4\Proyecto Final\GestionInventario\GestionInventario\obj\Debug\GestionInventario.pdb
+C:\Users\ANK1T3S1S\source\repos\ds4\Proyecto Final\GestionInventario\GestionInventario\bin\ExcelDataReader.DataSet.dll
+C:\Users\ANK1T3S1S\source\repos\ds4\Proyecto Final\GestionInventario\GestionInventario\bin\ExcelDataReader.dll
+C:\Users\ANK1T3S1S\source\repos\ds4\Proyecto Final\GestionInventario\GestionInventario\bin\System.ValueTuple.dll
+C:\Users\ANK1T3S1S\source\repos\ds4\Proyecto Final\GestionInventario\GestionInventario\bin\ExcelDataReader.pdb
+C:\Users\ANK1T3S1S\source\repos\ds4\Proyecto Final\GestionInventario\GestionInventario\bin\ExcelDataReader.xml
+C:\Users\ANK1T3S1S\source\repos\ds4\Proyecto Final\GestionInventario\GestionInventario\bin\ExcelDataReader.DataSet.pdb
+C:\Users\ANK1T3S1S\source\repos\ds4\Proyecto Final\GestionInventario\GestionInventario\bin\ExcelDataReader.DataSet.xml
+C:\Users\ANK1T3S1S\source\repos\ds4\Proyecto Final\GestionInventario\GestionInventario\bin\System.ValueTuple.xml
