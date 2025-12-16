@@ -248,17 +248,17 @@
             font-size: 0.8rem;
         }
 
-        .etiqueta_operativo {
+        .etiqueta_Disponible {
             background-color: #d4edda;
             color: #155724;
         }
 
-        .etiqueta_baja {
-            background-color: #f8d7da;
+        .etiqueta_Vendido {
+            background-color: palevioletred;
             color: #721c24;
         }
 
-        .etiqueta_prestamo {
+        .etiqueta_Reservado {
             background-color: #fff3cd;
             color: #856404;
         }
@@ -404,10 +404,9 @@
                 <div class="grupo_formulario">
                     <label>Estado:</label>
                     <select id="editEstado">
-                        <option value="Operativo">Operativo</option>
-                        <option value="Prestamo">Préstamo</option>
-                        <option value="En Reparacion">En Reparación</option>
-                        <option value="Descartado">Descartado</option>
+                        <option value="Disponible">Disponible</option>
+                        <option value="Reservado">Reservado</option>
+                        <option value="Vendido">Vendido</option>
                     </select>
                 </div>
             </div>
@@ -437,8 +436,6 @@
                     <option value="Laptop">Laptop</option>
                     <option value="Desktop">Desktop</option>
                     <option value="Servidor">Servidor</option>
-                    <option value="Tablet">Tablet</option>
-                    <option value="Perifericos">Periférico</option>
                 </select>
             </div>
 
@@ -446,9 +443,9 @@
                 <label>Estado:</label>
                 <select id="selEstado">
                     <option value="">-- Todos --</option>
-                    <option value="Operativo">Operativo</option>
-                    <option value="Prestamo">Préstamo</option>
-                    <option value="Descartado">Descartado</option>
+                    <option value="Disponible">Disponible</option>
+                    <option value="Reservado">Reservado</option>
+                    <option value="Vendido">Vendido</option>
                 </select>
             </div>
 
@@ -491,7 +488,7 @@
 
     <script>
         let resultados_cache = [];
-        let accion_confirmada = null; // Variable para almacenar la función a ejecutar
+        let accion_confirmada = null; 
 
         function mostrar_carga(mostrar, mensaje = "Procesando...") {
             const overlay = document.getElementById('overlay_carga');
@@ -540,9 +537,9 @@
 
                     let html = '';
                     resultados_cache.forEach(p => {
-                        let claseEstado = 'etiqueta_operativo';
-                        if (p.Estado === 'Descartado') claseEstado = 'etiqueta_baja';
-                        if (p.Estado === 'Préstamo' || p.Estado === 'Prestamo') claseEstado = 'etiqueta_prestamo';
+                        let claseEstado = 'etiqueta_Disponible';
+                        if (p.Estado === 'Vendido') claseEstado = 'etiqueta_Vendido';
+                        if (p.Estado === 'Reservado' || p.Estado === 'Reservado') claseEstado = 'etiqueta_Reservado';
 
                         html += `
                             <tr>

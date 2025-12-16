@@ -107,7 +107,7 @@ namespace GestiónInventario.Controllers
                 {
                     string query = @"SELECT NumeroSerie, Identificador, Modelo, TipoCI, Hostname, DireccionIP, Sucursal, Ubicacion, Estado, Titulo, RamGB, Almacenamiento, SistemaOperativo FROM ProductosIT WHERE 1=1";
 
-                    if (!string.IsNullOrEmpty(texto)) query += " AND (NumeroSerie LIKE @t OR Modelo LIKE @t OR Hostname LIKE @t)";
+                    if (!string.IsNullOrEmpty(texto)) query += " AND (NumeroSerie LIKE @t OR Modelo LIKE @t OR Hostname LIKE @t OR Sucursal LIKE @t OR Fabricante LIKE @t OR Estado LIKE @t )";
                     if (!string.IsNullOrEmpty(tipo)) query += " AND TipoCI = @tipo";
                     if (!string.IsNullOrEmpty(estado)) query += " AND Estado = @est";
 
@@ -181,7 +181,7 @@ namespace GestiónInventario.Controllers
                         string est = reader["Estado"].ToString().Replace(",", " ");
                         string c = reader["CreadoPor"].ToString().Replace(",", " ");
 
-                        // CORRECCIÓN: Manejar DBNull para FechaCreacion
+                        
                         string f = reader["FechaCreacion"] != DBNull.Value ? Convert.ToDateTime(reader["FechaCreacion"]).ToString("yyyy-MM-dd") : "";
 
                         csv.AppendLine($"{s},{i},{m},{t},{h},{ip},{suc},{ubi},{est},{c},{f}");
@@ -246,8 +246,7 @@ namespace GestiónInventario.Controllers
                 }
                 else
                 {
-                    // NOTA: Esta sección (ExcelDataReader) causa el error CS0246 si el NuGet no está instalado. 
-                    // Si el error persiste, DEBERÁS eliminar esta sección 'else' completa o instalar el paquete.
+                   
                     using (var reader = ExcelReaderFactory.CreateReader(stream))
                     {
                         var result = reader.AsDataSet();
@@ -279,7 +278,7 @@ namespace GestiónInventario.Controllers
             catch (Exception ex) { return InternalServerError(ex); }
         }
 
-        // --- MÉTODO HELPER (Necesario para Importar) ---
+       
         private void InsertarRegistro(SqlConnection con, string[] datos)
         {
             string q = @"INSERT INTO ProductosIT (NumeroSerie, Identificador, Modelo, TipoCI, Hostname, DireccionIP, Sucursal, Ubicacion, Estado, FechaCreacion, CreadoPor) 
@@ -299,7 +298,7 @@ namespace GestiónInventario.Controllers
             cmd.ExecuteNonQuery();
         }
 
-        // --- MÉTODO ACTUALIZADO PARA LAS TARJETAS DEL DASHBOARD ---
+       
         [HttpGet]
         [Route("resumen")]
         public IHttpActionResult Resumen()
@@ -314,7 +313,7 @@ namespace GestiónInventario.Controllers
                     string query = @"
                         SELECT TipoCI, COUNT(*) AS Cantidad 
                         FROM ProductosIT 
-                        WHERE Estado IN ('Operativo', 'Prestamo') 
+                        WHERE Estado IN ('Disponible', 'Reservado') 
                         GROUP BY TipoCI";
 
                     SqlCommand cmd = new SqlCommand(query, con);
@@ -326,7 +325,7 @@ namespace GestiónInventario.Controllers
                         string tipo = reader["TipoCI"] != DBNull.Value ? reader["TipoCI"].ToString() : "Sin Clasificar";
                         int cantidad = Convert.ToInt32(reader["Cantidad"]);
 
-                        // Lógica de colores y estado de stock (Crítico, Bajo, A Nivel, Mucho Stock)
+                        
                         string estadoStock = "A Nivel";
                         string color = "verde";
 
@@ -337,7 +336,7 @@ namespace GestiónInventario.Controllers
                         listaResumen.Add(new { Tipo = tipo, Cantidad = cantidad, Estado = estadoStock, Color = color });
                     }
                 }
-                return Ok(listaResumen); // Devuelve la lista con la estructura que el JS espera
+                return Ok(listaResumen); 
             }
             catch (Exception ex) { return InternalServerError(ex); }
         }
