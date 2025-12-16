@@ -107,7 +107,7 @@ namespace GestiónInventario.Controllers
                 {
                     string query = @"SELECT NumeroSerie, Identificador, Modelo, TipoCI, Hostname, DireccionIP, Sucursal, Ubicacion, Estado, Titulo, RamGB, Almacenamiento, SistemaOperativo FROM ProductosIT WHERE 1=1";
 
-                    if (!string.IsNullOrEmpty(texto)) query += " AND (NumeroSerie LIKE @t OR Modelo LIKE @t OR Hostname LIKE @t OR Sucursal LIKE @t OR Fabricante LIKE @t OR Estado LIKE @t )";
+                    if (!string.IsNullOrEmpty(texto)) query += " AND (TipoCI LIKE @t OR NumeroSerie LIKE @t OR Modelo LIKE @t OR Hostname LIKE @t OR Sucursal LIKE @t OR Fabricante LIKE @t OR Estado LIKE @t )";
                     if (!string.IsNullOrEmpty(tipo)) query += " AND TipoCI = @tipo";
                     if (!string.IsNullOrEmpty(estado)) query += " AND Estado = @est";
 
@@ -152,14 +152,14 @@ namespace GestiónInventario.Controllers
         public HttpResponseMessage Exportar(string texto = "", string tipo = "", string estado = "")
         {
             StringBuilder csv = new StringBuilder();
-            csv.AppendLine("Serie,Identificador,Modelo,Tipo,Hostname,IP,Sucursal,Ubicacion,Estado,CreadoPor,Fecha");
+            csv.AppendLine("Fabricante,Serie,Identificador,Modelo,Tipo,Hostname,IP,Sucursal,Ubicacion,Estado,CreadoPor,Fecha,RamGB,Almacenamiento,");
             try
             {
                 string conexionString = ConfigurationManager.ConnectionStrings["CadenaInventario"].ConnectionString;
                 using (SqlConnection conexion = new SqlConnection(conexionString))
                 {
-                    string query = @"SELECT NumeroSerie, Identificador, Modelo, TipoCI, Hostname, DireccionIP, Sucursal, Ubicacion, Estado, CreadoPor, FechaCreacion FROM ProductosIT WHERE 1=1";
-                    if (!string.IsNullOrEmpty(texto)) query += " AND (NumeroSerie LIKE @Texto OR Modelo LIKE @Texto OR Hostname LIKE @Texto)";
+                    string query = @"SELECT Fabricante, NumeroSerie, Identificador, Modelo, TipoCI, Hostname, DireccionIP, Sucursal, Ubicacion, Estado, CreadoPor, FechaCreacion, RamGB, Almacenamiento FROM ProductosIT WHERE 1=1";
+                    if (!string.IsNullOrEmpty(texto)) query += " AND (Fabricante LIKE @Texto OR NumeroSerie LIKE @Texto OR Modelo LIKE @Texto OR Hostname LIKE @Texto RamGB LIKE @Texto OR Almacenamiento LIKE @Texto OR)";
                     if (!string.IsNullOrEmpty(tipo)) query += " AND TipoCI = @Tipo";
                     if (!string.IsNullOrEmpty(estado)) query += " AND Estado = @Estado";
                     SqlCommand cmd = new SqlCommand(query, conexion);
@@ -170,6 +170,7 @@ namespace GestiónInventario.Controllers
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
+                        string fb = reader["Fabricante"].ToString().Replace(",", " ");
                         string s = reader["NumeroSerie"].ToString().Replace(",", " ");
                         string i = reader["Identificador"].ToString().Replace(",", " ");
                         string m = reader["Modelo"].ToString().Replace(",", " ");
@@ -180,11 +181,13 @@ namespace GestiónInventario.Controllers
                         string ubi = reader["Ubicacion"].ToString().Replace(",", " ");
                         string est = reader["Estado"].ToString().Replace(",", " ");
                         string c = reader["CreadoPor"].ToString().Replace(",", " ");
+                        string r = reader["RamGB"].ToString().Replace(",", " ");
+                        string a = reader["Almacenamiento"].ToString().Replace(",", " ");
 
-                        
+
                         string f = reader["FechaCreacion"] != DBNull.Value ? Convert.ToDateTime(reader["FechaCreacion"]).ToString("yyyy-MM-dd") : "";
 
-                        csv.AppendLine($"{s},{i},{m},{t},{h},{ip},{suc},{ubi},{est},{c},{f}");
+                        csv.AppendLine($"{fb},{s},{i},{m},{t},{h},{ip},{suc},{ubi},{est},{c},{f},{r},{a}");
                     }
                 }
                 HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
@@ -282,7 +285,7 @@ namespace GestiónInventario.Controllers
         private void InsertarRegistro(SqlConnection con, string[] datos)
         {
             string q = @"INSERT INTO ProductosIT (NumeroSerie, Identificador, Modelo, TipoCI, Hostname, DireccionIP, Sucursal, Ubicacion, Estado, FechaCreacion, CreadoPor) 
-                         VALUES (@s, @id, @m, @t, @h, @ip, @suc, @ubi, @e, GETDATE(), 'CargaMasiva')";
+                         VALUES ( @s, @id, @m, @t, @h, @ip, @suc, @ubi, @e, GETDATE(), 'CargaMasiva')";
 
             SqlCommand cmd = new SqlCommand(q, con);
             cmd.Parameters.AddWithValue("@s", datos[0].Trim());
@@ -293,7 +296,8 @@ namespace GestiónInventario.Controllers
             cmd.Parameters.AddWithValue("@ip", datos.Length > 5 ? datos[5].Trim() : "");
             cmd.Parameters.AddWithValue("@suc", datos.Length > 6 ? datos[6].Trim() : "");
             cmd.Parameters.AddWithValue("@ubi", datos.Length > 7 ? datos[7].Trim() : "");
-            cmd.Parameters.AddWithValue("@e", datos.Length > 8 ? datos[8].Trim() : "Operativo");
+            cmd.Parameters.AddWithValue("@e", datos.Length > 8 ? datos[8].Trim() : "Disponible");
+           
 
             cmd.ExecuteNonQuery();
         }

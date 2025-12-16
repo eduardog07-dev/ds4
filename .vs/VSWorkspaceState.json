@@ -1,6 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\GestionInventario",
+    "\\GestionInventario\\GestionInventario",
+    "\\GestionInventario\\GestionInventario\\Controllers"
   ],
+  "SelectedNode": "\\GestionInventario\\GestionInventario\\Controllers\\ProductosApiController.cs",
   "PreviewInSolutionExplorer": false
 }
