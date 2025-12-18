@@ -333,9 +333,9 @@ namespace GestiónInventario.Controllers
                         string estadoStock = "A Nivel";
                         string color = "verde";
 
-                        if (cantidad <= 5) { estadoStock = "Crítico"; color = "rojo"; }
-                        else if (cantidad > 5 && cantidad <= 20) { estadoStock = "Bajo"; color = "naranja"; }
-                        else if (cantidad > 50) { estadoStock = "Mucho Stock"; color = "azul"; }
+                        if (cantidad <= 180) { estadoStock = "Crítico"; color = "rojo"; }
+                        else if (cantidad > 5 && cantidad <= 190) { estadoStock = "Bajo"; color = "naranja"; }
+                        else if (cantidad > 200) { estadoStock = "Mucho Stock"; color = "azul"; }
 
                         listaResumen.Add(new { Tipo = tipo, Cantidad = cantidad, Estado = estadoStock, Color = color });
                     }
